@@ -1,0 +1,43 @@
+services:
+  frontend:
+    build: ./frontend
+    container_name: frontend-app
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+  backend:
+    build: ./backend
+    container_name: backend-app
+    ports:
+      - "5000:5000"
+    environment:
+      DB_HOST: database
+      DB_NAME: appdb
+      DB_USER: appuser
+      DB_PASSWORD: apppass
+    depends_on:
+      - database
+    networks:
+      - app-network
+
+  database:
+    image: postgres:15
+    container_name: postgres-db
+    environment:
+      POSTGRES_DB: appdb
+      POSTGRES_USER: appuser
+      POSTGRES_PASSWORD: apppass
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - app-network
+
+volumes:
+  postgres_data:
+
+networks:
+  app-network:
